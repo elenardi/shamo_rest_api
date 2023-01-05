@@ -84,3 +84,17 @@ export const getAllCategory = async(request: Request, response: Response, next: 
         return response.status(400).send(errorResponse(error, 400))
     }
 }
+
+export const deleteCategory = async(request: Request, response: Response, next: NextFunction) => {
+    try {
+        if (request.jwtPayload.role !== UserRole.ADMIN){
+            return response.status(405).send(errorResponse("Don't have access", 405))
+        }
+
+        await categoryRepository.delete(request.params.id)
+
+        return response.status(200).send(successResponse('Success delete category', 200))
+    } catch (error) {
+        return response.status(400).send(errorResponse(error, 400))
+    }
+}
