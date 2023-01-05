@@ -33,7 +33,7 @@ export const register = async (request: Request, response: Response, next: NextF
         }
         const user = await userRepository.findOneBy({email: body.email})
         if(user){
-            return response.status(400).send(errorResponse("User Already Exists", response.statusCode))
+            return response.status(409).send(errorResponse("User Already Exists", 409))
         }
 
         const newUser = new User()
@@ -48,10 +48,10 @@ export const register = async (request: Request, response: Response, next: NextF
         newUser.hashPassword()
         await userRepository.save(newUser)
 
-        return response.status(200).send(successResponse("Create User Success", {data: newUser}, response.statusCode))
+        return response.status(200).send(successResponse("Create User Success", {data: newUser}, 200))
         // return next(customSuccess)
     } catch (error) {
-        return response.status(400).send(errorResponse(error, response.statusCode))
+        return response.status(400).send(errorResponse(error, 400))
     }
 }
 

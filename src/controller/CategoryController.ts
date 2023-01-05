@@ -14,7 +14,7 @@ export const createCategory = async(request: Request, response: Response, next: 
 
     try {
         if (request.jwtPayload.role !== UserRole.ADMIN){
-            return response.status(405).send(errorResponse("Don't have access", response.statusCode))
+            return response.status(405).send(errorResponse("Don't have access", 405))
         }
 
         const body = request.body
@@ -25,7 +25,7 @@ export const createCategory = async(request: Request, response: Response, next: 
 
         const category = await categoryRepository.findOneBy({name: body.name})
         if(category){
-            return response.status(400).send(errorResponse("Category Already Exists", response.statusCode))
+            return response.status(409).send(errorResponse("Category Already Exists", 409))
         }
 
         const newCategory = new Category()
