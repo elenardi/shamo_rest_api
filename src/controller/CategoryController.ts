@@ -38,3 +38,35 @@ export const createCategory = async(request: Request, response: Response, next: 
         return response.status(400).send(errorResponse(error, 400))
     }
 }
+
+export const updateCategory = async(request: Request, response: Response, next: NextFunction) => {
+    const updateCategorySchema = (input) => Joi.object({
+        name: Joi.string().uppercase().required(),
+    }).validate(input)
+
+    try {
+        if (request.jwtPayload.role !== UserRole.ADMIN){
+            return response.status(405).send(errorResponse("Don't have access", 405))
+        }
+
+        const body = request.body
+        const errors = updateCategorySchema(request.body)
+        if ('error' in errors) {
+            return response.status(422).send(validationResponse(errors))
+        }
+
+        const category = await categoryRepository.findOneBy({name: body.name})
+        if(category){
+            return response.status(409).send(errorResponse("Category Already Exists", 409))
+        } 
+
+        const setCategory = await categoryRepository.findOneBy({id: request.jwtPayload.id})
+        setCategory.name = body.name
+
+        await categoryRepository.save(setCategory)
+
+        return response.status(201).send(successResponse('Success update category', {data: setCategory}, 200))
+    } catch (error) {
+        return response.status(400).send(errorResponse(error, 400))
+    }
+}
