@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs')
 import { IsString, IsEmail, validateOrReject, IsPhoneNumber, IsBoolean } from "class-validator"
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, CreateDateColumn, UpdateDateColumn } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm"
 
 export enum UserRole {
     CUSTOMER = 'customer',
@@ -54,6 +54,9 @@ export class User {
 
     @UpdateDateColumn()
     public updatedAt: Date
+
+    @DeleteDateColumn()
+    public deletedAt: Date
 
     public hashPassword() {
         this.password = bcrypt.hashSync(this.password, 8)
