@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs')
-import { IsString, validateOrReject } from "class-validator"
+import { IsString, IsUppercase, validateOrReject } from "class-validator"
 import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm"
 
 @Entity()
@@ -9,6 +9,7 @@ export class Category {
 
     @Column()
     @IsString()
+    @IsUppercase()
     public name: string
 
     @CreateDateColumn()
