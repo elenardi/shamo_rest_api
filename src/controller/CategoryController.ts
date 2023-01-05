@@ -93,7 +93,7 @@ export const deleteCategory = async(request: Request, response: Response, next: 
 
         await categoryRepository.delete(request.params.id)
 
-        return response.status(200).send(successResponse('Success delete category', 200))
+        return response.status(200).send(successResponse('Success delete category', {data: null}, 200))
     } catch (error) {
         return response.status(400).send(errorResponse(error, 400))
     }
