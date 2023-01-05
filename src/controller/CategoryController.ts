@@ -60,12 +60,12 @@ export const updateCategory = async(request: Request, response: Response, next: 
             return response.status(409).send(errorResponse("Category Already Exists", 409))
         } 
 
-        const setCategory = await categoryRepository.findOneBy({id: request.jwtPayload.id})
+        const setCategory = await categoryRepository.findOneBy({id: request.params.id})
         setCategory.name = body.name
 
         await categoryRepository.save(setCategory)
 
-        return response.status(201).send(successResponse('Success update category', {data: setCategory}, 200))
+        return response.status(201).send(successResponse('Success update category', {data: setCategory}, 201))
     } catch (error) {
         return response.status(400).send(errorResponse(error, 400))
     }
