@@ -8,6 +8,6 @@ const router = Router()
 
 router.use('/auth', auth)
 router.use('/user', user)
-router.use('/category/create', category)
+router.use('/category', category)
 
 export default router
