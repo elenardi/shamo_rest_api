@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs')
 import { IsString, IsUppercase, validateOrReject } from "class-validator"
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany } from "typeorm"
+import { Product } from "./Product"
 
 @Entity()
 export class Category {
@@ -20,11 +21,13 @@ export class Category {
 
     @DeleteDateColumn()
     public deletedAt: Date
+
+    @OneToMany(() => Product, (product) => product.category)
+    public product: Product
     
     @BeforeInsert()
     @BeforeUpdate()
     async validate() {
         await validateOrReject(this);
     }
-
 }
