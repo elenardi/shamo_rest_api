@@ -19,7 +19,7 @@ export const createProduct = async(request: Request, response: Response, next: N
     }).validate(input)
 
     try {
-        if (request.jwtPayload.role !== UserRole.ADMIN){
+        if (request.jwtPayload.role === UserRole.CUSTOMER){
             return response.status(405).send(errorResponse("Don't have access", 405))
         }
 
@@ -59,7 +59,7 @@ export const updateProduct = async(request: Request, response: Response, next: N
     }).validate(input)
 
     try {
-        if (request.jwtPayload.role !== UserRole.ADMIN){
+        if (request.jwtPayload.role === UserRole.CUSTOMER){
             return response.status(405).send(errorResponse("Don't have access", 405))
         }
 
@@ -83,6 +83,47 @@ export const updateProduct = async(request: Request, response: Response, next: N
         await productRepository.save(product)
 
         return response.status(200).send(successResponse('Success update product', {data: product}, 200))
+    } catch (error) {
+        return response.status(400).send(errorResponse(error, 400))
+    }
+}
+
+export const getAllProduct = async(request: Request, response: Response, next: NextFunction) => {
+    try {
+        const product = await productRepository.find({relations: ['category'], order: {name: 'ASC'}})
+        return response.status(200).send(successResponse('Success show all product', {data: product}, 200))
+    } catch (error) {
+        return response.status(400).send(errorResponse(error, 400))
+    }
+}
+
+export const getProductById = async(request: Request, response: Response, next: NextFunction) => {
+    try {
+        const product = await productRepository.findOneBy({id: request.params.id})
+        if(!product){
+            return response.status(409).send(errorResponse("Product not found", 409))
+        }
+        return response.status(200).send(successResponse('Success show product by id', {data: product}, 200))
+    } catch (error) {
+        return response.status(400).send(errorResponse(error, 400))
+    }
+}
+
+export const deleteProduct = async(request: Request, response: Response, next: NextFunction) => {
+    try {
+        if (request.jwtPayload.role === UserRole.CUSTOMER){
+            return response.status(405).send(errorResponse("Don't have access", 405))
+        }
+
+        const product = await productRepository.findOneBy({id: request.params.id})
+
+        if(!product){
+            return response.status(404).send(errorResponse('Product not found', 404))
+        }
+
+        await productRepository.softDelete(request.params.id)
+
+        return response.status(200).send(successResponse('Success delete product', {data: null}, 200))
     } catch (error) {
         return response.status(400).send(errorResponse(error, 400))
     }

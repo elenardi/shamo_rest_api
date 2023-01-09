@@ -1,10 +1,13 @@
 import { Router } from 'express'
-import { createProduct, updateProduct } from '../../controller/ProductController'
+import { createProduct, deleteProduct, getAllProduct, getProductById, updateProduct } from '../../controller/ProductController'
 import { checkJwt } from '../../utils/checkJwt'
 
 const router = Router()
 
 router.post('/create', [checkJwt, createProduct])
 router.patch('/update/id=:id', [checkJwt, updateProduct])
+router.get('/all', [checkJwt, getAllProduct])
+router.get('/id=:id', [checkJwt, getProductById])
+router.delete('/delete/id=:id', [checkJwt, deleteProduct])
 
 export default router
