@@ -81,9 +81,9 @@ export const getAllCategory = async(request: Request, response: Response, next: 
             return response.status(405).send(errorResponse("Don't have access", 405))
         }
 
-        const category = await categoryRepository.find()
+        const category = await categoryRepository.find({order: {name: 'ASC'}})
 
-        return response.status(200).send(successResponse('Success update category', {data: category}, 200))
+        return response.status(200).send(successResponse('Success show all category', {data: category}, 200))
     } catch (error) {
         return response.status(400).send(errorResponse(error, 400))
     }
