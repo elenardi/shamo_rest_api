@@ -94,6 +94,10 @@ export const verify = async(request: Request, response: Response, next: NextFunc
     try {
         const user = await userRepository.findOneBy({id: request.params.id})
 
+        if(!user){
+            return response.status(404).send(errorResponse('User not found', 404))
+        }
+
         user.verified = true
 
         await userRepository.save(user)
