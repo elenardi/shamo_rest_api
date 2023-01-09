@@ -61,6 +61,10 @@ export const updateCategory = async(request: Request, response: Response, next: 
         } 
 
         const setCategory = await categoryRepository.findOneBy({id: request.params.id})
+
+        if(!setCategory){
+            return response.status(404).send(errorResponse('Category not found', 404))
+        }
         setCategory.name = body.name
 
         await categoryRepository.save(setCategory)
@@ -89,6 +93,12 @@ export const deleteCategory = async(request: Request, response: Response, next: 
     try {
         if (request.jwtPayload.role !== UserRole.ADMIN){
             return response.status(405).send(errorResponse("Don't have access", 405))
+        }
+
+        const category = await categoryRepository.findOneBy({id: request.params.id})
+
+        if(!category){
+            return response.status(404).send(errorResponse('Category not found', 404))
         }
 
         await categoryRepository.softDelete(request.params.id)
