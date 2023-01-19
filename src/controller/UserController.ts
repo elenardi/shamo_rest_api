@@ -10,6 +10,10 @@ const userRepository = AppDataSource.getRepository(User)
 
 export const getUser = async (request: Request, response: Response, next: NextFunction) => {
     try {
+        if (request.jwtPayload.role !== UserRole.ADMIN){
+            return response.status(405).send(errorResponse("Don't have access", 405))
+        }
+        
         const user = await userRepository.find()
 
         return response.status(200).send(successResponse('List User', {data: user}, 200))

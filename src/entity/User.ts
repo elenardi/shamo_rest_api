@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs')
-import { IsString, IsEmail, validateOrReject, IsPhoneNumber, IsBoolean } from "class-validator"
+import { IsString, IsEmail, validateOrReject, IsPhoneNumber, IsBoolean, IsNumber } from "class-validator"
 import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm"
 
 export enum UserRole {
@@ -43,11 +43,17 @@ export class User {
     public role: UserRole
 
     @Column({
+        type: 'int'
+    })
+    @IsNumber()
+    public verifyCode: number
+
+    @Column({
         type: 'boolean',
         default: false,
     })
     @IsBoolean()
-    public verified: boolean
+    public isVerified: boolean
 
     @CreateDateColumn()
     public createdAt: Date
