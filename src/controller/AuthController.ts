@@ -43,12 +43,21 @@ export const register = async (request: Request, response: Response, next: NextF
         newUser.password = body.password
         newUser.phoneNumber = body.phoneNumber
         newUser.role = body.role
-        newUser.verified = false
+        newUser.verifyCode = Math.floor(Math.random()*90000) + 10000
+        newUser.isVerified = false
 
         newUser.hashPassword()
         await userRepository.save(newUser)
 
-        return response.status(200).send(successResponse("Create User Success", {data: newUser}, 200))
+        const data = {
+            fullname: newUser.fullname,
+            username: newUser.username,
+            email: newUser.email,
+            phoneNumber: newUser.phoneNumber,
+            isVerified: newUser.isVerified
+        }
+
+        return response.status(200).send(successResponse("Create User Success", {data: data}, 200))
         // return next(customSuccess)
     } catch (error) {
         return response.status(400).send(errorResponse(error, 400))
@@ -69,7 +78,7 @@ export const login = async(request: Request, response: Response, next: NextFunct
             return response.status(409).send(errorResponse('Incorect email or password', 409))
         }
 
-        if (user.verified === false) {
+        if (user.isVerified === false) {
             return response.status(409).send(errorResponse('User need verify', 409))
         }
 
@@ -92,17 +101,30 @@ export const login = async(request: Request, response: Response, next: NextFunct
 
 export const verify = async(request: Request, response: Response, next: NextFunction) => {
     try {
-        const user = await userRepository.findOneBy({id: request.params.id})
+        const {verifyCode} = request.body
+        const user = await userRepository.findOne({
+            where: {
+                id: request.params.id,
+                verifyCode
+            }
+        })
 
         if(!user){
             return response.status(404).send(errorResponse('User not found', 404))
         }
 
-        user.verified = true
-
+        user.isVerified = true
         await userRepository.save(user)
 
-        return response.status(200).send(successResponse('Success user verify', {data: user}, 200))
+        const data = {
+            fullname: user.fullname,
+            username: user.username,
+            email: user.email,
+            phoneNumber: user.phoneNumber,
+            isVerified: user.isVerified
+        }
+
+        return response.status(200).send(successResponse('Success user verify', {data: data}, 200))
     } catch (error) {
         return response.status(400).send(errorResponse(error, 400))
     }
