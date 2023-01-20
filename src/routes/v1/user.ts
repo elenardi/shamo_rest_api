@@ -1,10 +1,11 @@
 import { Router } from 'express'
-import { getUser, getUserAuth } from '../../controller/UserController'
+import { fetch, getUser, updateUser } from '../../controller/UserController'
 import { checkJwt } from '../../utils/checkJwt'
 
 const router = Router()
 
 router.get('/all', [checkJwt, getUser])
-router.get('/auth', [checkJwt, getUserAuth])
+router.get('/fetch', [checkJwt, fetch])
+router.post('/update', [checkJwt, updateUser])
 
 export default router

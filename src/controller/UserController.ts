@@ -22,10 +22,39 @@ export const getUser = async (request: Request, response: Response, next: NextFu
     }
 }
 
-export const getUserAuth = async (request: Request, response: Response, next: NextFunction) => {
+export const fetch = async (request: Request, response: Response, next: NextFunction) => {
     try {
         const user = await userRepository.findOneBy({id: request.jwtPayload.id})
         return response.status(200).send(successResponse('User Authorized', {data: user}, 200))
+    } catch (error) {
+        return response.status(400).send(errorResponse(error, 400))
+    }
+}
+
+export const updateUser = async (request: Request, response: Response, next: NextFunction) => {
+    const updateUserSchema = (input) => Joi.object({
+        fullname: Joi.string(),
+        username: Joi.string().min(5).max(200),
+        email: Joi.string().email(),
+        phoneNumber: Joi.string(),
+    }).validate(input)
+    try {
+        const body = request.body
+        const errors = updateUserSchema(request.body)
+        if ('error' in errors) {
+            return response.status(422).send(validationResponse(errors))
+        }
+
+        const user = await userRepository.findOneBy({id: request.jwtPayload.id})
+
+        user.fullname = body.fullname
+        user.username = body.username
+        user.email = body.email
+        user.phoneNumber = body.phoneNumber
+
+        await userRepository.save(user)
+
+        return response.status(200).send(successResponse('Success update user', {data: user}, 200))
     } catch (error) {
         return response.status(400).send(errorResponse(error, 400))
     }
