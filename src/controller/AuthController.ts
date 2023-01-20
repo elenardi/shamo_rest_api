@@ -22,7 +22,7 @@ export const register = async (request: Request, response: Response, next: NextF
             .minOfUppercase(1)
             .noWhiteSpaces()
             .required(),
-        phoneNumber: Joi.string().required(),
+        phoneNumber: Joi.string().min(10).max(15).required(),
         role: Joi.string().required(),
     }).validate(input)
     try {
@@ -36,12 +36,24 @@ export const register = async (request: Request, response: Response, next: NextF
             return response.status(409).send(errorResponse("User Already Exists", 409))
         }
 
+        let handlePhoneNumber = body.phoneNumber.trim()
+                handlePhoneNumber = handlePhoneNumber.replace(" ","")
+                handlePhoneNumber = handlePhoneNumber.replace("-","")
+                handlePhoneNumber = handlePhoneNumber.replace("(","")
+                handlePhoneNumber = handlePhoneNumber.replace(")","")
+                handlePhoneNumber = handlePhoneNumber.replace(".","")
+                handlePhoneNumber = handlePhoneNumber.replace("+","")
+
+        if(handlePhoneNumber.search(0) == 0){
+            handlePhoneNumber = handlePhoneNumber.replace('0',62)
+        }
+
         const newUser = new User()
         newUser.fullname = body.fullname
         newUser.username = body.username
         newUser.email = body.email
         newUser.password = body.password
-        newUser.phoneNumber = body.phoneNumber
+        newUser.phoneNumber = handlePhoneNumber
         newUser.role = body.role
         newUser.verifyCode = Math.floor(Math.random()*90000) + 10000
         newUser.isVerified = false

@@ -32,7 +32,7 @@ export class User {
     public password: string
 
     @Column()
-    @IsPhoneNumber()
+    @IsString()
     public phoneNumber: string
 
     @Column({

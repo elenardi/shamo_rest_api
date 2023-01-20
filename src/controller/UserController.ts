@@ -36,7 +36,7 @@ export const updateUser = async (request: Request, response: Response, next: Nex
         fullname: Joi.string(),
         username: Joi.string().min(5).max(200),
         email: Joi.string().email(),
-        phoneNumber: Joi.string(),
+        phoneNumber: Joi.string().min(10).max(15),
     }).validate(input)
     try {
         const body = request.body
@@ -47,10 +47,22 @@ export const updateUser = async (request: Request, response: Response, next: Nex
 
         const user = await userRepository.findOneBy({id: request.jwtPayload.id})
 
+        let handlePhoneNumber = body.phoneNumber.trim()
+                handlePhoneNumber = handlePhoneNumber.replace(" ","")
+                handlePhoneNumber = handlePhoneNumber.replace("-","")
+                handlePhoneNumber = handlePhoneNumber.replace("(","")
+                handlePhoneNumber = handlePhoneNumber.replace(")","")
+                handlePhoneNumber = handlePhoneNumber.replace(".","")
+                handlePhoneNumber = handlePhoneNumber.replace("+","")
+
+        if(handlePhoneNumber.search(0) == 0){
+            handlePhoneNumber = handlePhoneNumber.replace('0',62)
+        }
+
         user.fullname = body.fullname
         user.username = body.username
         user.email = body.email
-        user.phoneNumber = body.phoneNumber
+        user.phoneNumber = handlePhoneNumber
 
         await userRepository.save(user)
 
