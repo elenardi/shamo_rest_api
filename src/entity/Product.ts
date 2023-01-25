@@ -1,7 +1,7 @@
-const bcrypt = require('bcryptjs')
-import { IsNumber, IsString, IsUppercase, validateOrReject } from "class-validator"
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, ManyToOne, JoinColumn } from "typeorm"
+import { IsNumber, IsString, validateOrReject } from "class-validator"
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, ManyToOne, JoinColumn, OneToMany } from "typeorm"
 import { Category } from "./Category"
+import { TransactionDetail } from "./TransactionDetail"
 
 @Entity()
 export class Product {
@@ -40,6 +40,9 @@ export class Product {
     @ManyToOne(() => Category, (category) => category.product, { onDelete: 'CASCADE' })
     @JoinColumn()
     public category: Category
+
+    @OneToMany(() => TransactionDetail, (transaction_detail) => transaction_detail.product)
+    public transaction_detail: TransactionDetail
     
     @BeforeInsert()
     @BeforeUpdate()

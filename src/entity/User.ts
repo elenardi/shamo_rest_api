@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs')
 import { IsString, IsEmail, validateOrReject, IsPhoneNumber, IsBoolean, IsNumber } from "class-validator"
 import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany } from "typeorm"
 import { Transaction } from "./Transaction"
+import { TransactionDetail } from "./TransactionDetail"
 
 export enum UserRole {
     CUSTOMER = 'customer',
@@ -75,6 +76,9 @@ export class User {
 
     @OneToMany(() => Transaction, (transaction) => transaction.user)
     public transaction: Transaction
+
+    @OneToMany(() => TransactionDetail, (transaction_detail) => transaction_detail.user)
+    public transaction_detail: TransactionDetail
     
     @BeforeInsert()
     @BeforeUpdate()

@@ -1,5 +1,6 @@
-import { IsNumber, IsString, IsUppercase, validateOrReject } from "class-validator"
+import { IsNumber, IsString, validateOrReject } from "class-validator"
 import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany, ManyToOne } from "typeorm"
+import { TransactionDetail } from "./TransactionDetail"
 import { User } from "./User"
 
 @Entity()
@@ -19,11 +20,15 @@ export class Transaction {
     @IsString()
     public payment: string
 
-    @Column()
+    @Column({
+        type: 'float'
+    })
     @IsNumber()
     public totalPrice: number
 
-    @Column()
+    @Column({
+        type: 'float'
+    })
     @IsNumber()
     public sheppingPrice: number
 
@@ -44,6 +49,9 @@ export class Transaction {
 
     @ManyToOne(() => User, (user) => user.transaction)
     public user: User
+
+    @OneToMany(() => TransactionDetail, (transaction_detail) => transaction_detail.transaction)
+    public transaction_detail: TransactionDetail
     
     @BeforeInsert()
     @BeforeUpdate()
