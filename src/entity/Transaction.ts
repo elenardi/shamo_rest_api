@@ -1,4 +1,4 @@
-import { IsNumber, IsString, validateOrReject } from "class-validator"
+import { IsNumber, IsOptional, IsString, IsUppercase, validateOrReject } from "class-validator"
 import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany, ManyToOne } from "typeorm"
 import { TransactionDetail } from "./TransactionDetail"
 import { User } from "./User"
@@ -9,15 +9,19 @@ export class Transaction {
     public id: string
 
     @Column({
+        nullable: true,
         type: 'text'
     })
     @IsString()
+    @IsOptional()
     public address: string
 
     @Column({
         default: 'MANUAL'
     })
     @IsString()
+    @IsUppercase()
+    @IsOptional()
     public payment: string
 
     @Column({
@@ -36,6 +40,8 @@ export class Transaction {
         default: 'PENDING'
     })
     @IsString()
+    @IsUppercase()
+    @IsOptional()
     public status: string
 
     @CreateDateColumn()
