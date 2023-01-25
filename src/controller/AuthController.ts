@@ -141,3 +141,53 @@ export const verify = async(request: Request, response: Response, next: NextFunc
         return response.status(400).send(errorResponse(error, 400))
     }
 }
+
+export const fetch = async (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const user = await userRepository.findOneBy({id: request.jwtPayload.id})
+        return response.status(200).send(successResponse('User Authorized', {data: user}, 200))
+    } catch (error) {
+        return response.status(400).send(errorResponse(error, 400))
+    }
+}
+
+export const updateProfile = async (request: Request, response: Response, next: NextFunction) => {
+    const updateProfileSchema = (input) => Joi.object({
+        fullname: Joi.string(),
+        username: Joi.string().min(5).max(200),
+        email: Joi.string().email(),
+        phoneNumber: Joi.string().min(10).max(15),
+    }).validate(input)
+    try {
+        const body = request.body
+        const errors = updateProfileSchema(request.body)
+        if ('error' in errors) {
+            return response.status(422).send(validationResponse(errors))
+        }
+
+        const user = await userRepository.findOneBy({id: request.jwtPayload.id})
+
+        let handlePhoneNumber = body.phoneNumber.trim()
+                handlePhoneNumber = handlePhoneNumber.replace(" ","")
+                handlePhoneNumber = handlePhoneNumber.replace("-","")
+                handlePhoneNumber = handlePhoneNumber.replace("(","")
+                handlePhoneNumber = handlePhoneNumber.replace(")","")
+                handlePhoneNumber = handlePhoneNumber.replace(".","")
+                handlePhoneNumber = handlePhoneNumber.replace("+","")
+
+        if(handlePhoneNumber.search(0) == 0){
+            handlePhoneNumber = handlePhoneNumber.replace('0',62)
+        }
+
+        user.fullname = body.fullname
+        user.username = body.username
+        user.email = body.email
+        user.phoneNumber = handlePhoneNumber
+
+        await userRepository.save(user)
+
+        return response.status(200).send(successResponse('Success update user', {data: user}, 200))
+    } catch (error) {
+        return response.status(400).send(errorResponse(error, 400))
+    }
+}
