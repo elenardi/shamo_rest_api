@@ -1,4 +1,3 @@
-const bcrypt = require('bcryptjs')
 import { IsString, IsUppercase, validateOrReject } from "class-validator"
 import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany } from "typeorm"
 import { Product } from "./Product"

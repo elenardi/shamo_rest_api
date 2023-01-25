@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs')
 import { IsString, IsEmail, validateOrReject, IsPhoneNumber, IsBoolean, IsNumber } from "class-validator"
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany } from "typeorm"
+import { Transaction } from "./Transaction"
 
 export enum UserRole {
     CUSTOMER = 'customer',
@@ -71,6 +72,9 @@ export class User {
     public checkIfPasswordMatch(unencryptedPassword: string): boolean {
         return bcrypt.compareSync(unencryptedPassword, this.password)
     }
+
+    @OneToMany(() => Transaction, (transaction) => transaction.user)
+    public transaction: Transaction
     
     @BeforeInsert()
     @BeforeUpdate()
