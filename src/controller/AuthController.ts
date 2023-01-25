@@ -23,7 +23,7 @@ export const register = async (request: Request, response: Response, next: NextF
             .noWhiteSpaces()
             .required(),
         phoneNumber: Joi.string().min(10).max(15).required(),
-        role: Joi.string().required(),
+        role: Joi.string().uppercase().required(),
     }).validate(input)
     try {
         const body = request.body

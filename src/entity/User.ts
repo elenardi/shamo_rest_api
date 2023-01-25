@@ -1,13 +1,13 @@
 const bcrypt = require('bcryptjs')
-import { IsString, IsEmail, validateOrReject, IsPhoneNumber, IsBoolean, IsNumber } from "class-validator"
+import { IsString, IsEmail, validateOrReject, IsPhoneNumber, IsBoolean, IsNumber, IsUppercase } from "class-validator"
 import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany } from "typeorm"
 import { Transaction } from "./Transaction"
 import { TransactionDetail } from "./TransactionDetail"
 
 export enum UserRole {
-    CUSTOMER = 'customer',
-    MERCHANT = 'merchant',
-    ADMIN = 'admin',
+    CUSTOMER = 'CUSTOMER',
+    MERCHANT = 'MERCHANT',
+    ADMIN = 'ADMIN',
 }
 
 @Entity()
@@ -42,6 +42,7 @@ export class User {
         enum: UserRole,
     })
     @IsString()
+    @IsUppercase()
     public role: UserRole
 
     @Column({
