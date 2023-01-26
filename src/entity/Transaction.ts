@@ -1,5 +1,5 @@
-import { isEnum, IsEnum, IsNumber, IsOptional, IsString, IsUppercase, validateOrReject } from "class-validator"
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany, ManyToOne } from "typeorm"
+import { IsEnum, IsNumber, IsOptional, IsString, IsUppercase, validateOrReject } from "class-validator"
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany, ManyToOne, JoinColumn } from "typeorm"
 import { TransactionDetail } from "./TransactionDetail"
 import { User } from "./User"
 
@@ -65,7 +65,8 @@ export class Transaction {
     @DeleteDateColumn()
     public deletedAt: Date
 
-    @ManyToOne(() => User, (user) => user.transaction)
+    @ManyToOne(() => User, (user) => user.transaction, {onDelete: 'CASCADE'})
+    @JoinColumn()
     public user: User
 
     @OneToMany(() => TransactionDetail, (transaction_detail) => transaction_detail.transaction)
