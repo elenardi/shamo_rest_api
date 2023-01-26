@@ -36,17 +36,19 @@ export const createTransaction = async(request: Request, response: Response, nex
             return response.status(422).send(validationResponse(errors))
         }
 
+        const user = await userRepository.findOneBy({id: request.jwtPayload.id})
+
         const newTransaction = new Transaction()
         newTransaction.address = body.address
         newTransaction.payment = body.payment
         newTransaction.totalPrice = body.total_price
         newTransaction.sheppingPrice = body.shepping_price
         newTransaction.status = body.status
+        newTransaction.user = user
 
         await transactionRepository.save(newTransaction)
 
         for (let i=0; i < body.item.length; i++) {
-            const user = await userRepository.findOneBy({id: request.jwtPayload.id})
             const product = await productRepository.findOneBy({id: body.item[i].product_id})
 
             const newTransactionDetail = new TransactionDetail()
@@ -59,6 +61,75 @@ export const createTransaction = async(request: Request, response: Response, nex
         }
 
         return response.status(201).send(successResponse('Success create transaction', {data: newTransaction}, 201))
+    } catch (error) {
+        return response.status(400).send(errorResponse(error, 400))
+    }
+}
+
+export const getAllTransaction = async(request: Request, response: Response, next: NextFunction) => {
+    try {
+        if(request.jwtPayload.role === UserRole.ADMIN) {
+            const transaction = await transactionRepository.find({
+                relations: {
+                    user: true,
+                    transaction_detail: {
+                        product: true
+                    },
+                },
+                order: {
+                    createdAt: 'DESC'
+                },
+                select: {
+                    user: {
+                        id: true,
+                        fullname: true,
+                        phoneNumber: true,
+                    },
+                    transaction_detail: {
+                        id: true,
+                        quantity: true,
+                        product: {
+                            id: true,
+                            name: true,
+                            price: true,
+                            desc: true,
+                            tags: true
+                        }
+                    }
+                }
+            })
+            return response.status(200).send(successResponse('Success show all transaction', {data: transaction}, 200))
+        } else {
+            const transaction = await transactionRepository.find({
+                where: {
+                    user: {
+                        id: request.jwtPayload.id
+                    }
+                },
+                relations: {
+                    transaction_detail: {
+                        product: true
+                    },
+                },
+                order: {
+                    createdAt: 'DESC'
+                },
+                select: {
+                    transaction_detail: {
+                        id: true,
+                        quantity: true,
+                        product: {
+                            id: true,
+                            name: true,
+                            price: true,
+                            desc: true,
+                            tags: true
+                        }
+                    }
+                }
+            })
+            return response.status(200).send(successResponse('Success show all transaction', {data: transaction}, 200))
+        }
     } catch (error) {
         return response.status(400).send(errorResponse(error, 400))
     }
