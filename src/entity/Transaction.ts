@@ -1,8 +1,18 @@
-import { IsNumber, IsOptional, IsString, IsUppercase, validateOrReject } from "class-validator"
+import { isEnum, IsEnum, IsNumber, IsOptional, IsString, IsUppercase, validateOrReject } from "class-validator"
 import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany, ManyToOne } from "typeorm"
 import { TransactionDetail } from "./TransactionDetail"
 import { User } from "./User"
 
+export enum TransPayment {
+    COD = 'COD',
+    TRANSFER = 'TRANSFER',
+}
+
+export enum TransStatus {
+    PENDING = 'PENDING',
+    SUCCESS = 'SUCCESS',
+    FAILED = 'FAILED',
+}
 @Entity()
 export class Transaction {
     @PrimaryGeneratedColumn('uuid')
@@ -17,12 +27,12 @@ export class Transaction {
     public address: string
 
     @Column({
-        default: 'MANUAL'
+        type: 'enum',
+        enum: TransPayment,
     })
     @IsString()
-    @IsUppercase()
-    @IsOptional()
-    public payment: string
+    @IsEnum(TransPayment)
+    public payment: TransPayment
 
     @Column({
         type: 'float'
@@ -37,12 +47,14 @@ export class Transaction {
     public sheppingPrice: number
 
     @Column({
-        default: 'PENDING'
+        type: 'enum',
+        enum: TransStatus,
+        default: TransStatus.PENDING
     })
     @IsString()
-    @IsUppercase()
+    @IsEnum(TransStatus)
     @IsOptional()
-    public status: string
+    public status: TransStatus
 
     @CreateDateColumn()
     public createdAt: Date

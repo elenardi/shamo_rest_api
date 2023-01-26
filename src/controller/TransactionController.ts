@@ -15,10 +15,10 @@ const productRepository = AppDataSource.getRepository(Product)
 export const createTransaction = async(request: Request, response: Response, next: NextFunction) => {
     const createTransactionSchema = (input) => Joi.object({
         address: Joi.string().optional().allow(null, ''),
-        payment: Joi.string().uppercase().optional(),
+        payment: Joi.string().required(),
         total_price: Joi.number().required(),
         shepping_price: Joi.number().required(),
-        status: Joi.string().uppercase().optional(),
+        status: Joi.string().optional(),
         item: Joi.array().items({
             product_id: Joi.string().required(),
             quantity: Joi.number().required(),
