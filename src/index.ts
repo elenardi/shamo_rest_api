@@ -7,7 +7,7 @@ AppDataSource.initialize().then(async () => {
 
     // create express app
     const app = express()
-    app.use(bodyParser.json())
+    app.use(bodyParser.json({limit: '50mb'}))
 
     // setup express app here
     // router

@@ -4,10 +4,14 @@ import Joi = require("joi")
 import { UserRole } from "../entity/User"
 import { Product } from "../entity/Product"
 import { Category } from "../entity/Category"
+const base64Img = require('base64-img')
+import getBaseUrl from "get-base-url"
+import { ProductGallery } from "../entity/ProductGallery"
 const { successResponse, errorResponse, validationResponse } = require('../utils/response')
 
 const categoryRepository = AppDataSource.getRepository(Category)
 const productRepository = AppDataSource.getRepository(Product)
+const productGalleryRepository = AppDataSource.getRepository(ProductGallery)
 
 export const createProduct = async(request: Request, response: Response, next: NextFunction) => {
     const createProductSchema = (input) => Joi.object({
@@ -15,7 +19,10 @@ export const createProduct = async(request: Request, response: Response, next: N
         price: Joi.number().required(),
         desc: Joi.string().required(),
         tags: Joi.string().required(),
-        categoryId: Joi.string().required()
+        categoryId: Joi.string().required(),
+        productImage: Joi.array().items({
+            image: Joi.string().optional()
+        }).optional()
     }).validate(input)
 
     try {
@@ -43,9 +50,28 @@ export const createProduct = async(request: Request, response: Response, next: N
 
         await productRepository.save(newProduct)
 
+        if (typeof body.productImage !== 'undefined' && body.productImage.length !== 0) {
+            for(let i=0; i < body.productImage.length; i++){
+                try {
+                    base64Img.img(body.productImage[i].image, `./src/assets/images/product/${newProduct.id}`, Date.now(), async function(err, filepath) {
+                        const pathArr = filepath.split('/')
+                        const fileName = pathArr[pathArr.length - 1]
+
+                        const newProductGallery = new ProductGallery()
+                        newProductGallery.product = newProduct
+                        newProductGallery.url = `${getBaseUrl()}:5000/${fileName}`
+                        await productGalleryRepository.save(newProductGallery)
+                    })
+                } catch (error) {
+                    return response.status(400).send(errorResponse(error, 400))
+                }
+            }
+        }
+
         return response.status(201).send(successResponse('Success create product', {data: newProduct}, 201))
     } catch (error) {
-        return response.status(400).send(errorResponse(error, 400))
+        // const e = response.status(400).send(errorResponse(error, 400))
+        return next(errorResponse(error, 400))
     }
 }
 
