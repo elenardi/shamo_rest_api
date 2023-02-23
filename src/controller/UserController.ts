@@ -5,6 +5,7 @@ import Joi = require("joi")
 const { joiPasswordExtendCore } = require('joi-password')
 const joiPassword = Joi.extend(joiPasswordExtendCore)
 const { successResponse, errorResponse, validationResponse } = require('../utils/response')
+import buildPaginator from 'pagination-apis'
 
 const userRepository = AppDataSource.getRepository(User)
 
@@ -14,9 +15,16 @@ export const getUser = async (request: Request, response: Response, next: NextFu
             return response.status(405).send(errorResponse("Don't have access", 405))
         }
 
-        const user = await userRepository.find()
+        const { skip, limit, paginate } = buildPaginator({page: request.params.page, limit: request.params.limit})
+        const [data, total] = await userRepository.findAndCount({
+            order: {
+                fullname: 'ASC'
+            },
+            skip,
+            take: limit,
+        })
 
-        return response.status(200).send(successResponse('List User', {data: user}, 200))
+        return response.status(200).send(successResponse('List User', paginate(data, total), 200))
     } catch (error) {
         return response.status(400).send(errorResponse(error, 400))
     }

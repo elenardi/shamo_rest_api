@@ -26,6 +26,7 @@
       "joi-password": "^4.0.0",
       "jsonwebtoken": "^9.0.0",
       "mysql": "^2.14.1",
+      "pagination-apis": "^1.0.8",
       "reflect-metadata": "^0.1.13",
       "typeorm": "^0.3.6",
       "valid-url": "^1.0.9",
