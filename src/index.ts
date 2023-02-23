@@ -2,12 +2,14 @@ import express from "express"
 import * as bodyParser from "body-parser"
 import { AppDataSource } from "./data-source"
 import router from "./routes/index"
+import path from "path"
 
 AppDataSource.initialize().then(async () => {
 
     // create express app
     const app = express()
     app.use(bodyParser.json({limit: '50mb'}))
+    app.use(express.static('public'))
 
     // setup express app here
     // router

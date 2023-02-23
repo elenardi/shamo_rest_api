@@ -4,10 +4,9 @@ import Joi = require("joi")
 import { UserRole } from "../entity/User"
 import { Product } from "../entity/Product"
 import { Category } from "../entity/Category"
-const base64Img = require('base64-img')
-import getBaseUrl from "get-base-url"
 import { ProductGallery } from "../entity/ProductGallery"
 const { successResponse, errorResponse, validationResponse } = require('../utils/response')
+const sharp = require("sharp")
 
 const categoryRepository = AppDataSource.getRepository(Category)
 const productRepository = AppDataSource.getRepository(Product)
@@ -53,15 +52,21 @@ export const createProduct = async(request: Request, response: Response, next: N
         if (typeof body.productImage !== 'undefined' && body.productImage.length !== 0) {
             for(let i=0; i < body.productImage.length; i++){
                 try {
-                    base64Img.img(body.productImage[i].image, `./src/assets/images/product/${newProduct.id}`, Date.now(), async function(err, filepath) {
-                        const pathArr = filepath.split('/')
-                        const fileName = pathArr[pathArr.length - 1]
+                    let parts = body.productImage[i].image.split(';')
+                    let imageData = parts[1].split(',')[1]
+                    const img = Buffer.from(imageData, 'base64')
+                    const imageName = `${Date.now()}.jpeg`
 
-                        const newProductGallery = new ProductGallery()
-                        newProductGallery.product = newProduct
-                        newProductGallery.url = `${getBaseUrl()}:5000/${fileName}`
-                        await productGalleryRepository.save(newProductGallery)
-                    })
+                    await sharp(img)
+                    .resize(280, 175)
+                    .toFormat("jpeg", { mozjpeg: true })
+                    .jpeg({ quality: 100 })
+                    .toFile(`./public/assets/images/product/${imageName}`)
+
+                    const newProductGallery = new ProductGallery()
+                    newProductGallery.product = newProduct
+                    newProductGallery.url = `/assets/images/product/${imageName}`
+                    await productGalleryRepository.save(newProductGallery)
                 } catch (error) {
                     return response.status(400).send(errorResponse(error, 400))
                 }

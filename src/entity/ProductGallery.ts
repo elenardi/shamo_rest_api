@@ -4,6 +4,9 @@ import { Product } from "./Product"
 
 @Entity()
 export class ProductGallery {
+    static bulkCreate(productImages: any[]) {
+        throw new Error("Method not implemented.")
+    }
     @PrimaryGeneratedColumn('uuid')
     public id: string
 
