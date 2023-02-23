@@ -6,6 +6,7 @@ import { Transaction } from "../entity/Transaction"
 import { TransactionDetail } from "../entity/TransactionDetail"
 import { Product } from "../entity/Product"
 const { successResponse, errorResponse, validationResponse } = require('../utils/response')
+import buildPaginator from 'pagination-apis'
 
 const transactionRepository = AppDataSource.getRepository(Transaction)
 const transactionDetailRepository = AppDataSource.getRepository(TransactionDetail)
@@ -68,8 +69,9 @@ export const createTransaction = async(request: Request, response: Response, nex
 
 export const getAllTransaction = async(request: Request, response: Response, next: NextFunction) => {
     try {
+        const { skip, limit, paginate } = buildPaginator({page: request.params.page, limit: request.params.limit})
         if(request.jwtPayload.role === UserRole.ADMIN) {
-            const transaction = await transactionRepository.find({
+            const [data, total] = await transactionRepository.findAndCount({
                 relations: {
                     user: true,
                     transaction_detail: {
@@ -96,11 +98,13 @@ export const getAllTransaction = async(request: Request, response: Response, nex
                             tags: true
                         }
                     }
-                }
+                },
+                skip,
+                take: limit
             })
-            return response.status(200).send(successResponse('Success show all transaction', {data: transaction}, 200))
+            return response.status(200).send(successResponse('Success show all transaction', paginate(data, total), 200))
         } else {
-            const transaction = await transactionRepository.find({
+            const [data, total] = await transactionRepository.findAndCount({
                 where: {
                     user: {
                         id: request.jwtPayload.id
@@ -128,7 +132,7 @@ export const getAllTransaction = async(request: Request, response: Response, nex
                     }
                 }
             })
-            return response.status(200).send(successResponse('Success show all transaction', {data: transaction}, 200))
+            return response.status(200).send(successResponse('Success show all transaction', paginate(data, total), 200))
         }
     } catch (error) {
         return response.status(400).send(errorResponse(error, 400))
