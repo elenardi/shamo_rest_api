@@ -6,7 +6,7 @@ const router = Router()
 
 router.post('/create', [checkJwt, createProduct])
 router.patch('/update/id=:id', [checkJwt, updateProduct])
-router.get('/all', [checkJwt, getAllProduct])
+router.get('/all/limit=:limit&page=:page', [checkJwt, getAllProduct])
 router.get('/id=:id', [checkJwt, getProductById])
 router.delete('/delete/id=:id', [checkJwt, deleteProduct])
 

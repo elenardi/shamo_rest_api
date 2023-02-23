@@ -7,6 +7,7 @@ import { Category } from "../entity/Category"
 import { ProductGallery } from "../entity/ProductGallery"
 const { successResponse, errorResponse, validationResponse } = require('../utils/response')
 const sharp = require("sharp")
+import buildPaginator from 'pagination-apis'
 
 const categoryRepository = AppDataSource.getRepository(Category)
 const productRepository = AppDataSource.getRepository(Product)
@@ -121,8 +122,16 @@ export const updateProduct = async(request: Request, response: Response, next: N
 
 export const getAllProduct = async(request: Request, response: Response, next: NextFunction) => {
     try {
-        const product = await productRepository.find({relations: ['category'], order: {name: 'ASC'}})
-        return response.status(200).send(successResponse('Success show all product', {data: product}, 200))
+        const { skip, limit, paginate } = buildPaginator({page: request.params.page, limit: request.params.limit})
+        const [data, total] = await productRepository.findAndCount({
+            relations: ['category'],
+            order: {
+                name: 'ASC'
+            },
+            skip,
+            take: limit,
+        })
+        return response.status(200).send(successResponse('Success show all product', paginate(data, total), 200))
     } catch (error) {
         return response.status(400).send(errorResponse(error, 400))
     }
