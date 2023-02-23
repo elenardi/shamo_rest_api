@@ -31,9 +31,9 @@ export const createTransaction = async(request: Request, response: Response, nex
         }
 
         const body = request.body
-        const errors = createTransactionSchema(request.body)
-        if ('error' in errors) {
-            return response.status(422).send(validationResponse(errors))
+        const schema = createTransactionSchema(request.body)
+        if ('error' in schema) {
+            return response.status(422).send(validationResponse(schema))
         }
 
         const user = await userRepository.findOneBy({id: request.jwtPayload.id})

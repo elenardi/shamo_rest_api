@@ -18,9 +18,9 @@ export const createCategory = async(request: Request, response: Response, next: 
         }
 
         const body = request.body
-        const errors = createCategorySchema(request.body)
-        if ('error' in errors) {
-            return response.status(422).send(validationResponse(errors))
+        const schema = createCategorySchema(request.body)
+        if ('error' in schema) {
+            return response.status(422).send(validationResponse(schema))
         }
 
         const category = await categoryRepository.findOneBy({name: body.name})
@@ -50,9 +50,9 @@ export const updateCategory = async(request: Request, response: Response, next: 
         }
 
         const body = request.body
-        const errors = updateCategorySchema(request.body)
-        if ('error' in errors) {
-            return response.status(422).send(validationResponse(errors))
+        const schema = updateCategorySchema(request.body)
+        if ('error' in schema) {
+            return response.status(422).send(validationResponse(schema))
         }
 
         const category = await categoryRepository.findOneBy({name: body.name})

@@ -31,9 +31,9 @@ export const createProduct = async(request: Request, response: Response, next: N
         }
 
         const body = request.body
-        const errors = createProductSchema(request.body)
-        if ('error' in errors) {
-            return response.status(422).send(validationResponse(errors))
+        const schema = createProductSchema(request.body)
+        if ('error' in schema) {
+            return response.status(422).send(validationResponse(schema))
         }
 
         const category = await categoryRepository.findOneBy({id: body.categoryId})
@@ -90,9 +90,9 @@ export const updateProduct = async(request: Request, response: Response, next: N
         }
 
         const body = request.body
-        const errors = updateProductSchema(request.body)
-        if ('error' in errors) {
-            return response.status(422).send(validationResponse(errors))
+        const schema = updateProductSchema(request.body)
+        if ('error' in schema) {
+            return response.status(422).send(validationResponse(schema))
         }
 
         const product = await productRepository.findOneBy({id: request.params.id})

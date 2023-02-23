@@ -27,9 +27,9 @@ export const register = async (request: Request, response: Response, next: NextF
     }).validate(input)
     try {
         const body = request.body
-        const errors = registerSchema(request.body)
-        if ('error' in errors) {
-            return response.status(422).send(validationResponse(errors))
+        const schema = registerSchema(request.body)
+        if ('error' in schema) {
+            return response.status(422).send(validationResponse(schema))
         }
         const user = await userRepository.findOneBy({email: body.email})
         if(user){
@@ -160,9 +160,9 @@ export const updateProfile = async (request: Request, response: Response, next: 
     }).validate(input)
     try {
         const body = request.body
-        const errors = updateProfileSchema(request.body)
-        if ('error' in errors) {
-            return response.status(422).send(validationResponse(errors))
+        const schema = updateProfileSchema(request.body)
+        if ('error' in schema) {
+            return response.status(422).send(validationResponse(schema))
         }
 
         const user = await userRepository.findOneBy({id: request.jwtPayload.id})
