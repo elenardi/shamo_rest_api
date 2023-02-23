@@ -31,8 +31,9 @@ export const register = async (request: Request, response: Response, next: NextF
         if ('error' in schema) {
             return response.status(422).send(validationResponse(schema))
         }
-        const user = await userRepository.findOneBy({email: body.email})
-        if(user){
+        const user_email = await userRepository.findOneBy({email: body.email})
+        const user_username = await userRepository.findOneBy({username: body.username})
+        if(user_email || user_username){
             return response.status(409).send(errorResponse("User Already Exists", 409))
         }
 

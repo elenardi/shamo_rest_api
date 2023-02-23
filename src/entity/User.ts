@@ -19,7 +19,9 @@ export class User {
     @IsString()
     public fullname: string
 
-    @Column()
+    @Column({
+        unique: true
+    })
     @IsString()
     public username: string
 
