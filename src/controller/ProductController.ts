@@ -76,7 +76,6 @@ export const createProduct = async(request: Request, response: Response, next: N
 
         return response.status(201).send(successResponse('Success create product', {data: newProduct}, 201))
     } catch (error) {
-        // const e = response.status(400).send(errorResponse(error, 400))
         return next(errorResponse(error, 400))
     }
 }
@@ -101,7 +100,7 @@ export const updateProduct = async(request: Request, response: Response, next: N
             return response.status(422).send(validationResponse(schema))
         }
 
-        const product = await productRepository.findOneBy({id: request.params.id})
+        const product = await productRepository.findOneBy({id: String(request.query.id)})
         if(!product){
             return response.status(409).send(errorResponse("Product not found", 409))
         } 
@@ -122,7 +121,7 @@ export const updateProduct = async(request: Request, response: Response, next: N
 
 export const getAllProduct = async(request: Request, response: Response, next: NextFunction) => {
     try {
-        const { skip, limit, paginate } = buildPaginator({page: request.params.page, limit: request.params.limit})
+        const { skip, limit, paginate } = buildPaginator({page: String(request.query.page), limit: String(request.query.limit)})
         const [data, total] = await productRepository.findAndCount({
             relations: ['category'],
             order: {
@@ -139,7 +138,7 @@ export const getAllProduct = async(request: Request, response: Response, next: N
 
 export const getProductById = async(request: Request, response: Response, next: NextFunction) => {
     try {
-        const product = await productRepository.findOneBy({id: request.params.id})
+        const product = await productRepository.findOneBy({id: String(request.query.id)})
         if(!product){
             return response.status(409).send(errorResponse("Product not found", 409))
         }
@@ -155,13 +154,13 @@ export const deleteProduct = async(request: Request, response: Response, next: N
             return response.status(405).send(errorResponse("Don't have access", 405))
         }
 
-        const product = await productRepository.findOneBy({id: request.params.id})
+        const product = await productRepository.findOneBy({id: String(request.query.id)})
 
         if(!product){
             return response.status(404).send(errorResponse('Product not found', 404))
         }
 
-        await productRepository.softDelete(request.params.id)
+        await productRepository.softDelete(String(request.query.id))
 
         return response.status(200).send(successResponse('Success delete product', {data: null}, 200))
     } catch (error) {
