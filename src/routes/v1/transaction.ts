@@ -5,6 +5,6 @@ import { checkJwt } from '../../utils/checkJwt'
 const router = Router()
 
 router.post('/create', [checkJwt, createTransaction])
-router.get('/all/limit=:limit&page=:page', [checkJwt, getAllTransaction])
+router.get('/all', [checkJwt, getAllTransaction])
 
 export default router

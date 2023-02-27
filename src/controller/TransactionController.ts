@@ -69,7 +69,7 @@ export const createTransaction = async(request: Request, response: Response, nex
 
 export const getAllTransaction = async(request: Request, response: Response, next: NextFunction) => {
     try {
-        const { skip, limit, paginate } = buildPaginator({page: request.params.page, limit: request.params.limit})
+        const { skip, limit, paginate } = buildPaginator({page: String(request.query.page), limit: String(request.query.limit)})
         if(request.jwtPayload.role === UserRole.ADMIN) {
             const [data, total] = await transactionRepository.findAndCount({
                 relations: {
