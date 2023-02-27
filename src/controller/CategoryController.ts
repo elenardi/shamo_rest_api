@@ -60,7 +60,7 @@ export const updateCategory = async(request: Request, response: Response, next: 
             return response.status(409).send(errorResponse("Category Already Exists", 409))
         } 
 
-        const setCategory = await categoryRepository.findOneBy({id: request.params.id})
+        const setCategory = await categoryRepository.findOneBy({id: String(request.query.id)})
 
         if(!setCategory){
             return response.status(404).send(errorResponse('Category not found', 404))
@@ -95,13 +95,13 @@ export const deleteCategory = async(request: Request, response: Response, next: 
             return response.status(405).send(errorResponse("Don't have access", 405))
         }
 
-        const category = await categoryRepository.findOneBy({id: request.params.id})
+        const category = await categoryRepository.findOneBy({id: String(request.query.id)})
 
         if(!category){
             return response.status(404).send(errorResponse('Category not found', 404))
         }
 
-        await categoryRepository.softDelete(request.params.id)
+        await categoryRepository.softDelete(String(request.query.id))
 
         return response.status(200).send(successResponse('Success delete category', {data: null}, 200))
     } catch (error) {

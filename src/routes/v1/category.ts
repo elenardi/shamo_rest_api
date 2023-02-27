@@ -5,8 +5,8 @@ import { checkJwt } from '../../utils/checkJwt'
 const router = Router()
 
 router.post('/create', [checkJwt, createCategory])
-router.patch('/update/id=:id', [checkJwt, updateCategory])
+router.patch('/update', [checkJwt, updateCategory])
 router.get('/all', [checkJwt, getAllCategory])
-router.delete('/delete/id=:id', [checkJwt, deleteCategory])
+router.delete('/delete', [checkJwt, deleteCategory])
 
 export default router
