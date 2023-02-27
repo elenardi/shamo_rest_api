@@ -117,7 +117,7 @@ export const verify = async(request: Request, response: Response, next: NextFunc
         const {verifyCode} = request.body
         const user = await userRepository.findOne({
             where: {
-                id: request.params.id,
+                id: String(request.query.id),
                 verifyCode
             }
         })

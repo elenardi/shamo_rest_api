@@ -6,7 +6,7 @@ const router = Router()
 
 router.post('/register', register)
 router.post('/login', login)
-router.post('/verify/id=:id', verify)
+router.post('/verify', verify)
 router.get('/fetch', [checkJwt, fetch])
 router.post('/update', [checkJwt, updateProfile])
 
