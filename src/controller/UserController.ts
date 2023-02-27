@@ -15,7 +15,7 @@ export const getUser = async (request: Request, response: Response, next: NextFu
             return response.status(405).send(errorResponse("Don't have access", 405))
         }
 
-        const { skip, limit, paginate } = buildPaginator({page: request.params.page, limit: request.params.limit})
+        const { skip, limit, paginate } = buildPaginator({page: String(request.query.page), limit: String(request.query.limit)})
         const [data, total] = await userRepository.findAndCount({
             order: {
                 fullname: 'ASC'
