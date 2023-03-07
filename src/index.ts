@@ -2,6 +2,7 @@ import express from "express"
 import * as bodyParser from "body-parser"
 import { AppDataSource } from "./data-source"
 import router from "./routes/index"
+require('dotenv').config()
 import path from "path"
 
 AppDataSource.initialize().then(async () => {
@@ -20,7 +21,7 @@ AppDataSource.initialize().then(async () => {
     })
 
     // start express server
-    app.listen(process.env.PORT || 5000, ()=> {
+    app.listen(process.env.PORT || 8080, ()=> {
         console.log('Server running at port 5000')
     })
 
