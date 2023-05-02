@@ -27,6 +27,6 @@ AppDataSource.initialize().then(async () => {
         console.log(`Server running at port ${port}`)
     })
 
-    console.log(`Express server has started on port ${port}. Open http://localhost:${port}/users to see results`)
+    console.log(`Express server has started on port ${port}. Open http://localhost:${port} to see status`)
 
 }).catch(error => console.log(error))
