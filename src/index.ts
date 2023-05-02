@@ -7,6 +7,8 @@ import path from "path"
 
 AppDataSource.initialize().then(async () => {
 
+    const port = 5000
+
     // create express app
     const app = express()
     app.use(bodyParser.json({limit: '50mb'}))
@@ -17,14 +19,14 @@ AppDataSource.initialize().then(async () => {
     app.use('/', router)
 
     app.get("/", (req, res) => {
-        res.send("API Running")
+        res.send(`Shamo API Running ${port}`)
     })
 
     // start express server
-    app.listen(process.env.PORT || 8080, ()=> {
-        console.log('Server running at port 5000')
+    app.listen(process.env.PORT || 5000, ()=> {
+        console.log(`Server running at port ${port}`)
     })
 
-    console.log("Express server has started on port 5000. Open http://localhost:5000/users to see results")
+    console.log(`Express server has started on port ${port}. Open http://localhost:${port}/users to see results`)
 
 }).catch(error => console.log(error))
