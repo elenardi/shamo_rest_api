@@ -7,6 +7,7 @@ import { createJwtToken } from "../utils/createJwtToken"
 const { joiPasswordExtendCore } = require('joi-password')
 const joiPassword = Joi.extend(joiPasswordExtendCore)
 const { successResponse, errorResponse, validationResponse } = require('../utils/response')
+const { phoneHandler } = require('../helper/phoneHandler')
 
 const userRepository = AppDataSource.getRepository(User)
 
@@ -37,24 +38,14 @@ export const register = async (request: Request, response: Response, next: NextF
             return response.status(409).send(errorResponse("User Already Exists", 409))
         }
 
-        let handlePhoneNumber = body.phoneNumber.trim()
-                handlePhoneNumber = handlePhoneNumber.replace(" ","")
-                handlePhoneNumber = handlePhoneNumber.replace("-","")
-                handlePhoneNumber = handlePhoneNumber.replace("(","")
-                handlePhoneNumber = handlePhoneNumber.replace(")","")
-                handlePhoneNumber = handlePhoneNumber.replace(".","")
-                handlePhoneNumber = handlePhoneNumber.replace("+","")
-
-        if(handlePhoneNumber.search(0) == 0){
-            handlePhoneNumber = handlePhoneNumber.replace('0',62)
-        }
+        let phone = phoneHandler(body.phoneNumber)
 
         const newUser = new User()
         newUser.fullname = body.fullname
         newUser.username = body.username
         newUser.email = body.email
         newUser.password = body.password
-        newUser.phoneNumber = handlePhoneNumber
+        newUser.phoneNumber = phone
         newUser.role = body.role
         newUser.verifyCode = Math.floor(Math.random()*90000) + 10000
         newUser.isVerified = false
@@ -168,22 +159,12 @@ export const updateProfile = async (request: Request, response: Response, next: 
 
         const user = await userRepository.findOneBy({id: request.jwtPayload.id})
 
-        let handlePhoneNumber = body.phoneNumber.trim()
-                handlePhoneNumber = handlePhoneNumber.replace(" ","")
-                handlePhoneNumber = handlePhoneNumber.replace("-","")
-                handlePhoneNumber = handlePhoneNumber.replace("(","")
-                handlePhoneNumber = handlePhoneNumber.replace(")","")
-                handlePhoneNumber = handlePhoneNumber.replace(".","")
-                handlePhoneNumber = handlePhoneNumber.replace("+","")
-
-        if(handlePhoneNumber.search(0) == 0){
-            handlePhoneNumber = handlePhoneNumber.replace('0',62)
-        }
+        let phone = phoneHandler(body.phoneNumber)
 
         user.fullname = body.fullname
         user.username = body.username
         user.email = body.email
-        user.phoneNumber = handlePhoneNumber
+        user.phoneNumber = phone
 
         await userRepository.save(user)
 
